@@ -1,0 +1,10 @@
+{
+  "agents": [
+    "synapse-orchestrator",
+    "synapse-foresight",
+    "synapse-coder",
+    "synapse-sentinel",
+    "synapse-tester",
+    "synapse-scout"
+  ]
+}
