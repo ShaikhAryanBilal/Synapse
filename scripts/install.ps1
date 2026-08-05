@@ -1,90 +1,131 @@
-# Synapse — Multi-Agent Skill Installer (Windows / PowerShell)
-# Installs skills for OpenCode, Claude Code, and compatible agents
+# Synapse — Skill Installer (Windows / PowerShell)
+# Skills live in ONE place: ./skills. This script points agents at that
+# directory from OUTSIDE the repo — nothing is added to the repo itself.
+#
+#   Global  : link/copy the skills into your agent's global skills directory.
+#   Project : link/copy the skills into a project's agent directories
+#             (e.g. <project>\.agents\skills and <project>\.claude\skills).
+#
+# Usage:
+#   .\scripts\install.ps1 -OpenCode                       # global, OpenCode (+Codex/Gemini via ~/.agents/skills)
+#   .\scripts\install.ps1 -ClaudeCode                     # global, Claude Code
+#   .\scripts\install.ps1 -AllAgents                      # global, all agents
+#   .\scripts\install.ps1 -AllAgents -Copy                # copy instead of link
+#   .\scripts\install.ps1 -ProjectDir "..\MyProject"      # point that project's agents at ./skills
 
 param(
     [switch]$OpenCode,
     [switch]$ClaudeCode,
+    [switch]$Codex,
+    [switch]$Gemini,
     [switch]$AllAgents,
-    [switch]$ProjectLocal,
+    [switch]$Copy,
+    [string]$ProjectDir,
     [string]$SourceDir = (Split-Path -Parent $PSScriptRoot)
 )
 
 $skillsDir = Join-Path $SourceDir "skills"
-if (-not (Test-Path $skillsDir)) {
+if (-not (Test-Path -LiteralPath $skillsDir)) {
     Write-Error "Skills directory not found at $skillsDir"
     exit 1
 }
 
-$installTargets = @()
+# Ordered map of target path -> description (deduplicated by path)
+$targets = [System.Collections.Specialized.OrderedDictionary]::new()
 
-if ($OpenCode -or $AllAgents) {
-    $installTargets += @{
-        Name = "OpenCode (global)"
-        Path = "$env:USERPROFILE\.config\opencode\skills"
+if ($ProjectDir) {
+    if (-not (Test-Path -LiteralPath $ProjectDir)) {
+        Write-Error "Project directory not found: $ProjectDir"
+        exit 1
     }
-    $installTargets += @{
-        Name = "OpenCode (agents global)"
-        Path = "$env:USERPROFILE\.agents\skills"
+    $targets[(Join-Path $ProjectDir ".agents\skills")] = "Project $ProjectDir - .agents/skills (OpenCode, Codex, Gemini)"
+    $targets[(Join-Path $ProjectDir ".claude\skills")] = "Project $ProjectDir - .claude/skills (Claude Code)"
+}
+else {
+    if ($OpenCode -or $AllAgents) {
+        $targets["$env:USERPROFILE\.agents\skills"] = "OpenCode (global ~/.agents/skills)"
+    }
+    if ($ClaudeCode -or $AllAgents) {
+        $targets["$env:USERPROFILE\.claude\skills"] = "Claude Code (global ~/.claude/skills)"
+    }
+    if ($Codex -or $AllAgents) {
+        $targets["$env:USERPROFILE\.agents\skills"] = "Codex CLI (global ~/.agents/skills)"
+    }
+    if ($Gemini -or $AllAgents) {
+        $targets["$env:USERPROFILE\.agents\skills"] = "Gemini CLI (global ~/.agents/skills)"
     }
 }
 
-if ($ClaudeCode -or $AllAgents) {
-    $installTargets += @{
-        Name = "Claude Code (global)"
-        Path = "$env:USERPROFILE\.claude\skills"
-    }
-}
-
-if ($ProjectLocal) {
-    $installTargets += @{
-        Name = "Project-local (.opencode)"
-        Path = (Join-Path $SourceDir ".opencode\skills")
-    }
-    $installTargets += @{
-        Name = "Project-local (.claude)"
-        Path = (Join-Path $SourceDir ".claude\skills")
-    }
-    $installTargets += @{
-        Name = "Project-local (.agents)"
-        Path = (Join-Path $SourceDir ".agents\skills")
-    }
-}
-
-if ($installTargets.Count -eq 0) {
-    Write-Host "Usage: .\scripts\install.ps1 [-OpenCode] [-ClaudeCode] [-AllAgents] [-ProjectLocal]"
-    Write-Host "  -OpenCode      Install to OpenCode global skill directories"
-    Write-Host "  -ClaudeCode    Install to Claude Code global skill directories"
-    Write-Host "  -AllAgents     Install to all global agent directories"
-    Write-Host "  -ProjectLocal  Install project-local copies"
+if ($targets.Count -eq 0) {
+    Write-Host "Usage: .\scripts\install.ps1 [-OpenCode] [-ClaudeCode] [-Codex] [-Gemini] [-AllAgents] [-Copy] [-ProjectDir <path>]"
+    Write-Host "  -OpenCode      Point OpenCode's global skills dir at ./skills"
+    Write-Host "  -ClaudeCode    Point Claude Code's global skills dir at ./skills"
+    Write-Host "  -Codex         Point Codex CLI's global skills dir at ./skills"
+    Write-Host "  -Gemini        Point Gemini CLI's global skills dir at ./skills"
+    Write-Host "  -AllAgents     All of the above"
+    Write-Host "  -Copy          Copy skills instead of linking (self-contained install)"
+    Write-Host "  -ProjectDir    Point a specific project's agent dirs at ./skills (ignores the agent flags)"
     Write-Host ""
     Write-Host "Examples:"
     Write-Host "  .\scripts\install.ps1 -AllAgents"
-    Write-Host "  .\scripts\install.ps1 -OpenCode -ProjectLocal"
+    Write-Host "  .\scripts\install.ps1 -AllAgents -Copy"
+    Write-Host "  .\scripts\install.ps1 -ProjectDir ..\MyProject"
     exit 0
 }
 
-foreach ($target in $installTargets) {
-    $targetPath = $target.Path
-    Write-Host "Installing to $($target.Name)... " -NoNewline
+foreach ($entry in $targets.GetEnumerator()) {
+    $targetPath = $entry.Key
+    $label = $entry.Value
+    Write-Host "Installing for $label ... " -NoNewline
 
-    if (-not (Test-Path $targetPath)) {
-        New-Item -ItemType Directory -Path $targetPath -Force | Out-Null
-    }
-
-    # Copy each skill directory
-    Get-ChildItem -Path $skillsDir -Directory | ForEach-Object {
-        $skillName = $_.Name
-        $dest = Join-Path $targetPath $skillName
-
-        if (Test-Path $dest) {
-            Remove-Item -Path $dest -Recurse -Force
+    if ($Copy) {
+        if (-not (Test-Path -LiteralPath $targetPath)) {
+            New-Item -ItemType Directory -Path $targetPath -Force | Out-Null
         }
-
-        Copy-Item -Path $_.FullName -Destination $dest -Recurse -Force
+        Get-ChildItem -Path $skillsDir -Directory | ForEach-Object {
+            $dest = Join-Path $targetPath $_.Name
+            if (Test-Path -LiteralPath $dest) {
+                Remove-Item -LiteralPath $dest -Recurse -Force
+            }
+            Copy-Item -Path $_.FullName -Destination $dest -Recurse -Force
+        }
+        Write-Host "OK - copied $(@(Get-ChildItem -Path $skillsDir -Directory).Count) skills"
+        continue
     }
 
-    Write-Host "OK ($(@(Get-ChildItem -Path $skillsDir -Directory).Count) skills)"
+    # Link mode
+    if (Test-Path -LiteralPath $targetPath) {
+        $item = Get-Item -LiteralPath $targetPath -Force
+        if ($item.LinkType) {
+            if ($item.Target -eq $skillsDir) {
+                Write-Host "already linked. Skipped."
+                continue
+            }
+            $item.Delete()
+            Write-Host "replacing stale link ..."
+        }
+        else {
+            Write-Host ""
+            Write-Host "  WARNING: $targetPath already exists and is not a link." -ForegroundColor Yellow
+            Write-Host "  It may contain your own skills. Use -Copy to merge, or back it up first." -ForegroundColor Yellow
+            Write-Host "  Skipped." -ForegroundColor Yellow
+            continue
+        }
+    }
+    else {
+        New-Item -ItemType Directory -Path (Split-Path -Parent $targetPath) -Force | Out-Null
+    }
+
+    New-Item -ItemType Junction -Path $targetPath -Target $skillsDir | Out-Null
+    Write-Host "linked -> $skillsDir"
 }
 
 Write-Host ""
-Write-Host "Synapse skills installed. Restart your agent to discover them."
+Write-Host "Done. Skills are served from the single source: $skillsDir"
+if ($Copy) {
+    Write-Host "A copy was placed in each target directory (independent of the repo)."
+}
+else {
+    Write-Host "Links stay in sync with the repo but break if the repo is moved or deleted."
+}
+Write-Host "Restart your agent to discover the skills."

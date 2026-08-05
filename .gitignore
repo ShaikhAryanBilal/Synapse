@@ -1,0 +1,6 @@
+# Agent skill discovery pointers created by scripts/install.* or manual
+# junction/symlinks. Skills themselves live only in ./skills — these are
+# local links, never committed.
+.agents/
+.claude/
+.opencode/

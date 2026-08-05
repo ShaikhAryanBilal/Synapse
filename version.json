@@ -1,8 +1,9 @@
 {
-  "version": "2.1.0",
-  "skillCount": 12,
-  "agentCount": 12,
+  "version": "3.1.0",
+  "skillCount": 13,
+  "agentCount": 13,
   "referenceFileCount": 3,
+  "sourceOfTruth": "./skills",
   "compatibility": ["opencode", "claude-code", "codex-cli", "gemini-cli"],
   "defaultProfile": "core-5",
   "coreSkills": ["synapse-core", "synapse-foresight", "synapse-coder", "synapse-sentinel", "synapse-tester"],

@@ -1,9 +1,0 @@
-# Claude Code project configuration for Synapse
-skills_path:
-  - ./skills
-  - ./.claude/skills
-agents:
-  - name: synapse-orchestrator
-    description: Routes tasks to specialist skills
-    model: auto
-    temperature: 0.2

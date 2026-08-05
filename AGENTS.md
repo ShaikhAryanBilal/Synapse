@@ -54,10 +54,11 @@ Each stage feeds its output to the next. Any stage can reject or re-route.
 | `synapse-scholar` | Research | Researcher | read, webfetch, websearch, grep |
 | `synapse-guardian` | Git | Guardian | bash, read |
 | `synapse-writer` | Docs | Writer | read, write, edit |
+| `synapse-pipeline` | Orchestration | Runner | skill + task + read |
 | `synapse-keeper` | Memory | Steward | read, write, bash |
 | `synapse-parser` | Data | Parser | read, bash |
 
-**Total: 12 skills**
+**Total: 13 skills**
 
 ---
 
@@ -97,14 +98,27 @@ Foresight → Coder → Sentinel → Tester
 
 ---
 
-## Cross-Platform Compatibility
+## Single Source of Truth
 
-| Location | Agent |
-|----------|-------|
-| `./skills/<name>/SKILL.md` | OpenCode, Claude Code, Codex |
-| `.opencode/skills/<name>/SKILL.md` | OpenCode |
-| `.claude/skills/<name>/SKILL.md` | Claude Code |
-| `.agents/skills/<name>/SKILL.md` | OpenCode, compatible agents |
+All skill files live in **`./skills/<name>/SKILL.md`** — one copy, edited in place.
+The repo contains no agent directories and no duplicates. Each agent is pointed at
+that directory from outside the repo via a junction/symlink (or a copy):
+
+| Agent | Where it looks | Point at |
+|-------|----------------|----------|
+| OpenCode | `.agents/skills/` (project), `~/.agents/skills/` (global) | `./skills` |
+| Claude Code | `.claude/skills/` (project), `~/.claude/skills/` (global) | `./skills` |
+| Codex CLI | `.agents/skills/` (repo root), `~/.agents/skills/` (global) | `./skills` |
+| Gemini CLI | `.agents/skills/` (workspace), `~/.gemini/skills/` (global) | `./skills` |
+
+Install with the scripts (global or per-project, link or copy):
+
+```bash
+./scripts/install.sh --all-agents                    # macOS/Linux  (global)
+.\scripts\install.ps1 -AllAgents                     # Windows      (global)
+./scripts/install.sh --project-dir ../MyProject      # macOS/Linux  (per-project)
+.\scripts\install.ps1 -ProjectDir ..\MyProject       # Windows      (per-project)
+```
 
 All skills comply with the [Agent Skills specification](https://agentskills.io/specification).
 
@@ -112,19 +126,16 @@ All skills comply with the [Agent Skills specification](https://agentskills.io/s
 
 ## Usage
 
+Skills live in one place — `./skills/`. Point your agent at it (no copies in this repo):
+
 ```bash
-# Install for OpenCode
-cp -r ./skills/* ~/.config/opencode/skills/
+# Global — every project
+ln -s "$PWD/skills" ~/.agents/skills      # OpenCode, Codex CLI, Gemini CLI
+ln -s "$PWD/skills" ~/.claude/skills      # Claude Code
 
-# Install for Claude Code
-cp -r ./skills/* ~/.claude/skills/
-
-# Install project-local
-cp -r ./skills/* .opencode/skills/
-
-# Or use the installer scripts
-./scripts/install.sh --all-agents     # macOS/Linux
-.\scripts\install.ps1 -AllAgents     # Windows
+# Per-project
+ln -s "$PWD/skills" ../MyProject/.agents/skills
+ln -s "$PWD/skills" ../MyProject/.claude/skills
 ```
 
 ---
