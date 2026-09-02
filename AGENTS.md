@@ -98,6 +98,20 @@ Foresight → Coder → Sentinel → Tester
 
 ---
 
+## Response Contract Integrity (Non-Negotiable)
+
+Whenever a change touches code that **produces, shapes, or returns data to a consumer** — API endpoints, serializers, DTOs/mappers, view models, GraphQL resolvers, JSON builders — the agent MUST:
+
+1. **Snapshot the contract BEFORE** editing: enumerate every key/field the consumer relies on, along with its type and required/optional status.
+2. **Verify the contract AFTER** editing: diff the response shape against the pre-edit snapshot.
+3. **Never ship a silently dropped or renamed key.** A missing or renamed key breaks the frontend and downstream consumers without any obvious error.
+
+Any intentional contract change (removed/renamed key, type change) must be surfaced explicitly as a **breaking change** with the affected consumers named. Back this up with a contract/snapshot test so a dropped key fails CI instead of breaking production.
+
+This rule is enforced in `synapse-coder` (BEFORE/AFTER diff), `synapse-tester` (contract tests), and `synapse-foresight` (contract-drift risk).
+
+---
+
 ## Single Source of Truth
 
 All skill files live in **`./skills/<name>/SKILL.md`** — one copy, edited in place.

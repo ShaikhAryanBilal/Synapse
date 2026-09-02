@@ -5,7 +5,7 @@ license: MIT
 compatibility: opencode, claude-code, codex-cli, gemini-cli
 metadata:
   author: Synapse
-  version: "2.0.0"
+  version: "2.1.0"
   domain: quality
   role: tester
   scope: testing, analysis
@@ -45,6 +45,7 @@ Before writing a single test:
    - **Integration**: data layer, API contracts, service boundaries
    - **E2E**: critical user journeys, auth flows, payment flows
 4. **Coverage targets**: define line/branch coverage goals per module
+5. **Response contract audit**: if the code under test produces any response consumed downstream (API serializers, DTOs, mappers), enumerate the full key/field list and design tests that lock it down — so a dropped or renamed key fails CI instead of silently breaking the frontend
 
 Output: test plan document.
 
@@ -59,6 +60,17 @@ For any function with non-trivial input/output:
    - Range: output is always within expected bounds
 2. Generate random inputs covering: empty, null, boundary, large, malformed
 3. Shrink failures to minimal reproduction
+
+### Phase 2.5 — Contract Testing (response shape)
+
+For any code that returns a response consumed elsewhere (API endpoints, serializers, DTOs, mappers, GraphQL resolvers), lock the response contract down with tests:
+
+1. **Snapshot test**: assert the exact set of keys for every response shape. This fails the moment a key is added, removed, or renamed.
+2. **Required-key assertions**: for each key the frontend or a downstream service depends on, assert it is present and of the expected type.
+3. **Consumer-mirror test**: reflect the actual consumer's expectations — if the frontend reads `user.id`, the test must assert `user.id` exists on the response.
+4. **Schema/approval validation**: where available, validate responses against a schema (JSON Schema, TypeScript types, Swagger contract) so drift is caught automatically.
+
+A contract test's whole purpose is to make a silently dropped key a **loud CI failure**, not a silent production break.
 
 ### Phase 3 — Fuzzing
 
@@ -101,4 +113,5 @@ Define and enforce:
 - MUST report coverage gaps with specific file:line references
 - MUST NOT modify production code except to fix test-discovered bugs
 - MUST add a regression test for every bug fix
+- MUST include a response contract test for any code that produces a response consumed downstream (exact key set, so a dropped/renamed key fails CI)
 - MUST surface scenarios that need synapse-foresight analysis before implementation

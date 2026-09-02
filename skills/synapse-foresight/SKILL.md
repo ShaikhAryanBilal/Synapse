@@ -5,7 +5,7 @@ license: MIT
 compatibility: opencode, claude-code, codex-cli, gemini-cli
 metadata:
   author: Synapse
-  version: "1.0.0"
+  version: "1.1.0"
   domain: analysis
   role: architect
   scope: design, system-design, analysis
@@ -60,6 +60,7 @@ For every input, enumerate:
 | **Scale** | 0 items, 1 item, N items, extremely large N, pagination overflow |
 | **State** | Idempotency, partial failures, retry storms, stale state |
 | **Timing** | Timeouts, deadlines, delayed responses, clock skew |
+| **Contract** | Response shape drift — a key added, removed, or renamed in any response consumed downstream (frontend, other services), silently breaking consumers |
 
 Output: input space matrix.
 
@@ -112,6 +113,7 @@ For each risk, recommend:
 - MUST surface race condition and concurrency risks explicitly
 - MUST differentiate between theoretical and operationally likely failures
 - MUST provide testable conditions for each finding
+- MUST flag response-contract drift (dropped/renamed key, type change) as a high-likelihood, high-impact risk whenever the change touches response-shaping code — with the consumers affected explicitly named
 - MUST route implementation to synapse-coder, security findings to synapse-sentinel, test gaps to synapse-tester
 - MUST run BEFORE implementation on any complex or security-sensitive task
 
@@ -120,7 +122,7 @@ For each risk, recommend:
 ```
 ## Finding: [Title]
 - **Component**: module/file
-- **Category**: [Input / State / Timing / Security / Scale / Recovery]
+- **Category**: [Input / State / Timing / Security / Scale / Contract / Recovery]
 - **Severity**: 1-10
 - **Likelihood**: 1-10
 - **Detection**: 1-10
@@ -128,6 +130,7 @@ For each risk, recommend:
 - **Failure Mode**:
 - **Trigger**:
 - **Effect**:
+- **Consumers At Risk**: [every frontend/service that reads this response, if contract-related]
 - **Prevention**:
 - **Detection Control**:
 - **Recovery**:
