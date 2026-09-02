@@ -62,6 +62,22 @@ synapse-core query
   → default:           synapse-coder
 ```
 
+## On-Demand Release & Changelog (not in the default pipeline)
+
+Changelog generation is intentionally NOT part of the standard
+`foresight → coder → sentinel → tester` pipeline — it would add overhead to
+every task. It is a manual, on-demand flow routed to guardian only when asked:
+
+```
+User: "update the changelog for this release"
+  → synapse-guardian (Phase 4: reads version.json, classifies commits,
+       generates Keep-a-Changelog entry, flags version drift)
+  → optionally synapse-writer (polish/review the entry)
+```
+
+Invoke it explicitly (e.g. "update the changelog", "generate release notes")
+when a release is cut. Everyday coding tasks stay on the fast path.
+
 ## Context Passing on Handoff
 
 When delegating, always include:

@@ -4,7 +4,7 @@ description: Git operations specialist for version control, branch management, c
 license: MIT
 metadata:
   author: Synapse
-  version: "2.0.0"
+  version: "2.1.0"
   domain: version-control
   role: guardian
   scope: review, infrastructure
@@ -130,15 +130,17 @@ Output: execution log with commands run and verification results.
 
 When analyzing or generating changelogs:
 
-1. **Collect commits** in the analysis range:
+1. **Check version source**: read `version.json` (if present) for the current release `version`. Use its value and today's date (`YYYY-MM-DD`) for the changelog header.
+2. **Collect commits** in the analysis range:
    - `git log --oneline --since="<date>"` or `git log --oneline <tag>..HEAD`
-2. **Classify by type**: features, fixes, breaking changes, chores
-3. **Group by scope**: which modules/packages/services are affected
-4. **Identify breaking changes**: commits with `!` or `BREAKING CHANGE` footer
-5. **Generate changelog** in Keep a Changelog format:
+3. **Classify by type**: features, fixes, breaking changes, chores
+4. **Group by scope**: which modules/packages/services are affected
+5. **Identify breaking changes**: commits with `!` or `BREAKING CHANGE` footer
+6. **Flag version mismatch**: if `version.json` does not yet reflect this release (header version vs. committed version), flag it and let the user decide whether to bump — do NOT auto-write.
+7. **Generate changelog** in Keep a Changelog format:
 
 ```markdown
-## [version] - YYYY-MM-DD
+## [<version from version.json>] - YYYY-MM-DD
 
 ### Added
 - <feature description> (<commit hash>)
@@ -159,7 +161,7 @@ When analyzing or generating changelogs:
 - <security fix> (<commit hash>)
 ```
 
-Output: changelog section with classified commits.
+Output: changelog section with classified commits, using the `version.json` version and today's date.
 
 ### Phase 5 — PR Review Protocol
 
