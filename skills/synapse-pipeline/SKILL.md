@@ -2,7 +2,6 @@
 name: synapse-pipeline
 description: End-to-end execution pipeline that coordinates Foresight, Coder, Sentinel, and Tester in a single orchestrated pass. Load this skill when you have a complex or sensitive task that needs the full treatment. Single prompt, four specialist skills.
 license: MIT
-compatibility: opencode, claude-code, codex-cli, gemini-cli
 metadata:
   author: Synapse
   version: "1.0.0"

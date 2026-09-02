@@ -2,7 +2,6 @@
 name: synapse-tester
 description: QA and test engineering specialist. Test planning, property-based testing, fuzzing, coverage strategy, CI quality gates, regression prevention. Use for any testing or QA task.
 license: MIT
-compatibility: opencode, claude-code, codex-cli, gemini-cli
 metadata:
   author: Synapse
   version: "2.1.0"

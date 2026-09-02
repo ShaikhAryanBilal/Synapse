@@ -2,7 +2,6 @@
 name: synapse-planner
 description: Strategy architect for roadmaps, task decomposition, prioritization, and project planning. Produces actionable plans with milestones, dependencies, risk estimates, and effort sizing. Use when the task involves planning, scheduling, or organizing work before implementation.
 license: MIT
-compatibility: opencode, claude-code, codex-cli, gemini-cli
 metadata:
   author: Synapse
   version: "2.0.0"

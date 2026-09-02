@@ -2,7 +2,6 @@
 name: synapse-coder
 description: Production-grade implementation engineer. Writes, debugs, refactors, and optimizes code across the full stack. Multi-file edits, architecture-aware changes, performance-sensitive transformations. Use for any implementation task.
 license: MIT
-compatibility: opencode, claude-code, codex-cli, gemini-cli
 metadata:
   author: Synapse
   version: "2.1.0"

@@ -2,7 +2,6 @@
 name: synapse-writer
 description: Documentation specialist for technical writing, API references, guides, READMEs, inline docs, changelogs, and content formatting. Produces clear, consistent, maintainable documentation. Use when the task involves writing docs, READMEs, API references, or any prose.
 license: MIT
-compatibility: opencode, claude-code, codex-cli, gemini-cli
 metadata:
   author: Synapse
   version: "2.0.0"

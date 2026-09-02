@@ -41,7 +41,6 @@ Every skill must have this structure:
 name: synapse-<name>
 description: <one-line description for agent discovery>
 license: MIT
-compatibility: opencode, claude-code, codex-cli, gemini-cli
 metadata:
   author: Synapse
   version: "1.0.0"

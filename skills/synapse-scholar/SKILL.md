@@ -2,7 +2,6 @@
 name: synapse-scholar
 description: Deep researcher that synthesizes information from multiple sources with rigor. Handles fact-checking, technical deep-dives, comparative analysis, literature review, and multi-source synthesis. Use when the task requires thorough research, verification, or analysis beyond a quick lookup.
 license: MIT
-compatibility: opencode, claude-code, codex-cli, gemini-cli
 metadata:
   author: Synapse
   version: "2.0.0"

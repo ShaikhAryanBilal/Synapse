@@ -2,7 +2,6 @@
 name: synapse-scout
 description: Web scout that searches, browses, fetches, and scrapes web content for real-time information. Handles API docs, library references, live data, and competitive analysis. Use when the task requires fetching live data, checking docs, or web research.
 license: MIT
-compatibility: opencode, claude-code, codex-cli, gemini-cli
 metadata:
   author: Synapse
   version: "2.0.0"

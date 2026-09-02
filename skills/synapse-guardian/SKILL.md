@@ -2,7 +2,6 @@
 name: synapse-guardian
 description: Git operations specialist for version control, branch management, commit history, changelogs, PR review, and repository hygiene. Handles conventional commits, branching strategies, merge conflict resolution, and history analysis. Use when the task involves git commands, PR management, or repository history.
 license: MIT
-compatibility: opencode, claude-code, codex-cli, gemini-cli
 metadata:
   author: Synapse
   version: "2.0.0"

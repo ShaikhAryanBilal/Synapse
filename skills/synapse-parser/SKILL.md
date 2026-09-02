@@ -2,7 +2,6 @@
 name: synapse-parser
 description: Data parser for file reading, OCR, document parsing, and structured data extraction. Handles log files, configuration files, structured data formats, and document transformation. Use when the task involves extracting structured data from unstructured files or performing OCR.
 license: MIT
-compatibility: opencode, claude-code, codex-cli, gemini-cli
 metadata:
   author: Synapse
   version: "2.0.0"

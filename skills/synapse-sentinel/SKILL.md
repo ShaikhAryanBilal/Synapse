@@ -2,7 +2,6 @@
 name: synapse-sentinel
 description: Security auditor and penetration tester. Performs threat modeling, vulnerability scanning, OWASP Top 10 analysis, dependency auditing, CWE mapping, and exploitation assessment. Use for any security task.
 license: MIT
-compatibility: opencode, claude-code, codex-cli, gemini-cli
 metadata:
   author: Synapse
   version: "2.0.0"

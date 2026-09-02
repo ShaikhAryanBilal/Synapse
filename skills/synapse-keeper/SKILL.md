@@ -2,7 +2,6 @@
 name: synapse-keeper
 description: Memory steward that persists context, user preferences, project knowledge, and decisions across sessions. Handles append-only decision logs, context snapshots, preference files, and session handoff. Use when the task involves saving or retrieving information across conversations.
 license: MIT
-compatibility: opencode, claude-code, codex-cli, gemini-cli
 metadata:
   author: Synapse
   version: "2.0.0"

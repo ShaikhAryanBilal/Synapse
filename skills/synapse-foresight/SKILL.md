@@ -2,7 +2,6 @@
 name: synapse-foresight
 description: Pre-development analysis specialist. Threat modeling, edge-case enumeration, failure mode analysis, scenario mapping, and risk quantification. Use BEFORE any implementation to analyze what could go wrong.
 license: MIT
-compatibility: opencode, claude-code, codex-cli, gemini-cli
 metadata:
   author: Synapse
   version: "1.1.0"

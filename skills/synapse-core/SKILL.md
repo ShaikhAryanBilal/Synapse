@@ -2,7 +2,6 @@
 name: synapse-core
 description: Orchestrator that routes tasks to specialist skills based on intent analysis. Supports the full Synapse pipeline: foresight → coder → sentinel → tester. Use when coordinating multi-domain work or dispatching to the right domain expert.
 license: MIT
-compatibility: opencode, claude-code, codex-cli, gemini-cli
 metadata:
   author: Synapse
   version: "2.0.0"
